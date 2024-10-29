@@ -18,7 +18,9 @@ class User(AbstractUser):
         verbose_name="номер телефона",
         help_text="укажите телефон"
     )
-    city = models.CharField(max_length=100, verbose_name="город", **NULLABLE, help_text="укажите ваш город")
+    city = models.CharField(
+        max_length=100, verbose_name="город", **NULLABLE, help_text="укажите ваш город"
+    )
 
     avatar = models.ImageField(
         upload_to="users/avatars/",
