@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import UniqueConstraint
 
 NULLABLE = {"blank": True, "null": True}
 
@@ -32,7 +33,6 @@ class Course(models.Model):
 class Lesson(models.Model):
     title = models.CharField(
         max_length=150,
-        unique=True,
         verbose_name="название урока",
         help_text="укажите название урока",
         **NULLABLE,
@@ -53,7 +53,7 @@ class Lesson(models.Model):
         **NULLABLE,
     )
     link_video = models.URLField(
-        verbose_name="ccылка на видео", help_text="укажите ссылку на видео", **NULLABLE
+        verbose_name="ccылка на видео", unique=True, help_text="укажите ссылку на видео", **NULLABLE
     )
 
     def __str__(self):
@@ -63,3 +63,6 @@ class Lesson(models.Model):
         verbose_name = "урок"
         verbose_name_plural = "уроки"
         ordering = ["title"]
+        constraints = [
+            UniqueConstraint(fields=['title', 'course'], name='unique_title_per_course')
+        ]
