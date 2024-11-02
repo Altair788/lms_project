@@ -1,9 +1,23 @@
+from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
+from lms.models import Course, Lesson
+
 NULLABLE = {"blank": True, "null": True}
 
+
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('Users must have an email address')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
 class User(AbstractUser):
     username = None
@@ -32,6 +46,30 @@ class User(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
+    objects = CustomUserManager()
+
     class Meta:
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
+
+
+
+class Payment(models.Model):
+    PAYMENT_METHODS = [
+        ('cash', 'Наличными'),
+        ('bank_transfer', 'Перевод на счет'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    payment_data = models.DateField(verbose_name='дата платежа', help_text='введите дату платежа')
+    paid_course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='оплаченный курс', **NULLABLE, related_name='payment')
+    paid_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name='оплаченный урок', **NULLABLE, related_name='payment')
+    payment_amount = models.PositiveIntegerField(verbose_name='cумма оплаты')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, verbose_name='способ оплаты')
+
+    def __str__(self):
+        return f"Payment by {self.user} fot {self.paid_course or self.paid_lesson} on {self.payment_method}"
+
+    class Meta:
+        verbose_name = 'платеж'
+        verbose_name_plural = 'платежи'
