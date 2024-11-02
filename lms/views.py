@@ -5,8 +5,22 @@ from lms.serializers import CourseSerializer, LessonSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
-    serializer_class = CourseSerializer
     queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        course_id = self.request.query_params.get("course_id")
+
+        if course_id is not None:
+            try:
+                queryset = queryset.filter(course_id=int(course_id))
+            except ValueError:
+                # Обработка ошибки: неверный формат dog_id
+                queryset = queryset.none()  # Возвращаем пустой QuerySet
+
+        return queryset
+
 
 
 class LessonCreateAPIView(generics.CreateAPIView):

@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "users",
     "lms",
+    "django_filters",
+
 ]
 
 MIDDLEWARE = [
@@ -146,5 +148,12 @@ if CACHE_ENABLED:
 #         'rest_framework.permissions.IsAuthenticated',
 #     ]
 # }
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+}
+
+
 
 AUTH_USER_MODEL = "users.User"
