@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from lms.models import Course, Lesson
 from lms.serializers import CourseSerializer, LessonSerializer
+from users.permissions import IsModer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -24,16 +25,24 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         course = serializer.save(owner=self.request.user)
+    def get_permissions(self):
+        if self.action in ('retrieve', 'update', 'partial',):
+            self.permission_classes = [IsModer]
+        elif self.action in ('create', 'destroy',):
+            self.permission_classes = [~IsModer]
+        return super().get_permissions()
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = (~IsModer,)
 
     def perform_create(self, serializer):
         lesson = serializer.save()
         lesson.owner = self.request.user
         lesson.save()
+
 
 
 class LessonListAPIView(generics.ListAPIView):
@@ -44,13 +53,16 @@ class LessonListAPIView(generics.ListAPIView):
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = (IsModer,)
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = (IsModer,)
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = (~IsModer,)
