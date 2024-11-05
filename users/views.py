@@ -1,9 +1,9 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, generics
+from rest_framework import generics, viewsets
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from users.models import User, Payment
+from users.models import Payment, User
 from users.serializers import PaymentSerializer, UserSerializer
 
 
@@ -42,9 +42,12 @@ class UserDestroyAPIView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
 
-
 class PaymentListAPIView(generics.ListAPIView):
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ('paid_course', 'paid_lesson', 'payment_method',)
+    filterset_fields = (
+        "paid_course",
+        "paid_lesson",
+        "payment_method",
+    )

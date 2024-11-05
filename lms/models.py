@@ -23,7 +23,14 @@ class Course(models.Model):
         verbose_name="описание курса", help_text="введите описание курса", **NULLABLE
     )
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, **NULLABLE, verbose_name="Владелец", help_text="Укажите владельца")
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        **NULLABLE,
+        verbose_name="Владелец",
+        help_text="Укажите владельца",
+    )
+
     def __str__(self):
         return f"Курс {self.title}"
 
@@ -42,7 +49,8 @@ class Lesson(models.Model):
     )
     course = models.ForeignKey(
         Course,
-        on_delete=models.SET_NULL, **NULLABLE,
+        on_delete=models.SET_NULL,
+        **NULLABLE,
         verbose_name="курс",
         help_text="укажите курс",
     )
@@ -56,11 +64,19 @@ class Lesson(models.Model):
         **NULLABLE,
     )
     link_video = models.URLField(
-        verbose_name="ccылка на видео", unique=True, help_text="укажите ссылку на видео", **NULLABLE
+        verbose_name="ccылка на видео",
+        unique=True,
+        help_text="укажите ссылку на видео",
+        **NULLABLE,
     )
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, **NULLABLE, verbose_name="Владелец",
-                              help_text="Укажите владельца")
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        **NULLABLE,
+        verbose_name="Владелец",
+        help_text="Укажите владельца",
+    )
 
     def __str__(self):
         return f"Урок {self.title}"
@@ -70,5 +86,5 @@ class Lesson(models.Model):
         verbose_name_plural = "уроки"
         ordering = ["title"]
         constraints = [
-            UniqueConstraint(fields=['title', 'course'], name='unique_title_per_course')
+            UniqueConstraint(fields=["title", "course"], name="unique_title_per_course")
         ]
