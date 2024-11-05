@@ -14,13 +14,14 @@ class UserSerializer(serializers.ModelSerializer):
     payments = serializers.PrimaryKeyRelatedField(
         many=True, required=False, queryset=Payment.objects.all()
     )
+    password = serializers.CharField(write_only=True)  # Добавляем поле password
 
     def create(self, validated_data):
         payments = validated_data.pop(
-            "payments", None
-        )  # Извлекаем payments, если они есть
+            "payments", None)  # Извлекаем payments, если они есть
+        password = validated_data.pop("password")
         user = User(**validated_data)
-        user.set_password(validated_data["password"])
+        user.set_password(password)
         user.save()
 
         # Если есть платежи, добавляем их к пользователю
@@ -31,7 +32,4 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = "__all__"
-        # extra_kwargs = {
-        #     "password": {"write_only": True},  # Пароль только для записи
-        # }
+        fields = ("email", "phone", "city", "payments", "password",)
