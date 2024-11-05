@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
-from lms.models import Course, Lesson
 
 NULLABLE = {"blank": True, "null": True}
 
@@ -73,10 +72,10 @@ class Payment(models.Model):
         ('bank_transfer', 'Перевод на счет'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, verbose_name='пользователь')
     payment_data = models.DateField(verbose_name='дата платежа', help_text='введите дату платежа')
-    paid_course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='оплаченный курс', **NULLABLE, related_name='payment')
-    paid_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name='оплаченный урок', **NULLABLE, related_name='payment')
+    paid_course = models.ForeignKey('lms.Course', on_delete=models.CASCADE, verbose_name='оплаченный курс', **NULLABLE, related_name='payment')
+    paid_lesson = models.ForeignKey('lms.Lesson', on_delete=models.CASCADE, verbose_name='оплаченный урок', **NULLABLE, related_name='payment')
     payment_amount = models.PositiveIntegerField(verbose_name='cумма оплаты')
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, verbose_name='способ оплаты')
 
