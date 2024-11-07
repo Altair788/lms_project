@@ -1,9 +1,12 @@
-from rest_framework import generics, viewsets
-from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, viewsets, status
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from lms.models import Course, Lesson
+from lms.models import Course, Lesson, Subscription
 from lms.pagination import LmsPaginator
-from lms.serializers import CourseSerializer, LessonSerializer
+from lms.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer
 from users.permissions import IsModer, IsOwner
 
 
@@ -71,3 +74,28 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = (IsAuthenticated,  ~IsModer | IsOwner,)
+
+
+class SubscriptionAPIView(APIView):
+    permission_classes = [
+        IsAuthenticated]  # Убедитесь, что только аутентифицированные пользователи могут управлять подписками
+
+    def post(self, request, course_id):
+        user = request.user  # Получаем текущего пользователя
+
+        # Получаем объект курса из базы данных
+        course_item = get_object_or_404(Course, id=course_id)
+
+        # Проверяем существование подписки для текущего пользователя и курса
+        subs_item = Subscription.objects.filter(user=user, course=course_item)
+
+        if subs_item.exists():
+            # Если подписка существует - удаляем ее
+            subs_item.delete()
+            message = 'Подписка удалена'
+        else:
+            # Если подписки нет - создаем новую
+            Subscription.objects.create(user=user, course=course_item)
+            message = 'Подписка добавлена'
+
+        return Response({"message": message}, status=status.HTTP_200_OK)
