@@ -6,7 +6,7 @@ from lms.validators import validate_key_words
 
 
 class LessonSerializer(serializers.ModelSerializer):
-    link_video = serializers.CharField(validators=[validate_key_words])
+    link_video = serializers.CharField(validators=[validate_key_words], required=False)
 
     class Meta:
         model = Lesson
