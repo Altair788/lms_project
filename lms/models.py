@@ -88,3 +88,28 @@ class Lesson(models.Model):
         constraints = [
             UniqueConstraint(fields=["title", "course"], name="unique_title_per_course")
         ]
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        **NULLABLE,
+        verbose_name="Пользователь",
+        help_text="Укажите пользователя",
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        **NULLABLE,
+        verbose_name="курс",
+        help_text="укажите курс",
+    )
+
+    def __str__(self):
+        return f"Подписка пользователя {self.user} на курс {self.course}"
+
+    class Meta:
+        verbose_name = "подписка"
+        verbose_name_plural = "подписки"
+        unique_together = ('user', 'course',)
