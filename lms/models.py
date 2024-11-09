@@ -94,14 +94,12 @@ class Subscription(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        **NULLABLE,
         verbose_name="Пользователь",
         help_text="Укажите пользователя",
     )
     course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        **NULLABLE,
         verbose_name="курс",
         help_text="укажите курс",
     )
