@@ -50,3 +50,14 @@ class PaymentListAPIView(generics.ListAPIView):
         "paid_lesson",
         "payment_method",
     )
+
+
+class PaymentCreateAPIView(CreateAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+    permission_classes = (AllowAny,)
+
+    def perform_create(self, serializer):
+        user = serializer.save(is_active=True)
+        user.set_password(user.password)
+        user.save()
