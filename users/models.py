@@ -69,29 +69,26 @@ class User(AbstractUser):
 class Payment(models.Model):
     PAYMENT_METHODS = [
         ("cash", "Наличными"),
-        ("bank_transfer", "Перевод на счет"),
+        ("card", "Перевод на счет"),
     ]
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name="покупатель",
                                                           help_text="укажите покупателя", **NULLABLE)
-    payment_data = models.DateField(
-        verbose_name="дата платежа", help_text="введите дату платежа"
-    )
-    paid_course = models.ForeignKey(
+    course = models.ForeignKey(
         "lms.Course",
-        on_delete=models.SET_NULL,
-        verbose_name="оплаченный курс",
-        **NULLABLE,
+        on_delete=models.CASCADE,
+        verbose_name="курс",
         related_name="payment",
-        help_text="укажите оплаченный курс"
+        help_text="укажите название курса"
     )
-    paid_lesson = models.ForeignKey(
+
+    lesson = models.ForeignKey(
         "lms.Lesson",
         on_delete=models.SET_NULL,
-        verbose_name="оплаченный урок",
+        verbose_name="урок",
         **NULLABLE,
         related_name="payment",
-        help_text="укажите оплаченный урок"
+        help_text="укажите название урока"
     )
     payment_amount = models.PositiveIntegerField(verbose_name="cумма оплаты", help_text="укажите сумму оплаты")
     payment_method = models.CharField(
@@ -112,45 +109,9 @@ class Payment(models.Model):
             **NULLABLE,
         )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
-        return f"Оплачено {self.user} за {self.paid_course or self.paid_lesson} {self.payment_method} на сумму {self.payment_amount}"
+        return f"Оплачено {self.user} за {self.paid_course} на сумму {self.payment_amount}, метод оплаты: {self.payment_method}"
 
     class Meta:
         verbose_name = "платеж"
         verbose_name_plural = "платежи"
-
-#
-#
-# class CoursePayment(models.Model):
-#     amount = models.PositiveIntegerField(
-#         verbose_name="сумма оплаты",
-#         help_text="укажите сумму оплаты",
-#     )
-#     session_id = models.CharField(
-#         max_length=255,
-#         verbose_name="идентификатор сессии",
-#         help_text="укажите идентификатор сессии",
-#         **NULLABLE,
-#     )
-#     link = models.URLField(
-#         max_length=400,
-#         verbose_name="ссылка на оплату",
-#         help_text="укажите ссылку на оплату",
-#         **NULLABLE,
-#     )
-#     user = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name="пользователь",
-#                              help_text="укажите пользователя", **NULLABLE)
-#     course = models.ForeignKey(Course, on_delete=models.SET_NULL, verbose_name="курс", help_text="укажите курс",
-#                                **NULLABLE)
-#
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#
-#     def __str__(self):
-#         return f'{self.user} paid {self.amount} for {self.course}'
-#
-#     class Meta:
-#         verbose_name = 'оплата'
-#         verbose_name_plural = 'оплаты'
