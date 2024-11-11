@@ -4,7 +4,8 @@ from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
 from users.apps import UsersConfig
-from users.views import (PaymentListAPIView, UserCreateAPIView,
+from users.views import (CheckoutSessionsRetrieveAPIView, PaymentCreateAPIView,
+                         PaymentListAPIView, UserCreateAPIView,
                          UserDestroyAPIView, UserListAPIView,
                          UserRetrieveAPIView, UserUpdateAPIView)
 
@@ -18,6 +19,12 @@ urlpatterns = [
     path("update/<int:pk>/", UserUpdateAPIView.as_view(), name="user-update"),
     path("delete/<int:pk>/", UserDestroyAPIView.as_view(), name="user-delete"),
     path("payments/", PaymentListAPIView.as_view(), name="payments-list"),
+    path("payments/create/", PaymentCreateAPIView.as_view(), name="payments-create"),
+    path(
+        "payments/<int:pk>/",
+        CheckoutSessionsRetrieveAPIView.as_view(),
+        name="payments-retrieve",
+    ),
     path(
         "login/",
         TokenObtainPairView.as_view(permission_classes=(AllowAny,)),

@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "lms",
     "django_filters",
     "rest_framework_simplejwt",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
@@ -140,15 +141,6 @@ if CACHE_ENABLED:
     }
 
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.BasicAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ]
-# }
 REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -163,3 +155,10 @@ SIMPLE_JWT = {
 
 
 AUTH_USER_MODEL = "users.User"
+
+
+STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
+
+
+CUR_API_URL = "https://api.currencyapi.com/"
+CUR_API_KEY = os.getenv("CUR_API_KEY")
