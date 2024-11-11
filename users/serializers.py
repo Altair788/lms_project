@@ -18,7 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         payments = validated_data.pop(
-            "payments", None)  # Извлекаем payments, если они есть
+            "payments", None
+        )  # Извлекаем payments, если они есть
         password = validated_data.pop("password")
         user = User(**validated_data)
         user.set_password(password)
@@ -32,4 +33,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("email", "phone", "city", "payments", "password",)
+        fields = (
+            "email",
+            "phone",
+            "city",
+            "payments",
+            "password",
+        )

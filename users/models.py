@@ -72,14 +72,25 @@ class Payment(models.Model):
         ("card", "Перевод на счет"),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name="покупатель",
-                                                          help_text="укажите покупателя", **NULLABLE)
+    PAYMENT_STATUS_CHOICES = [
+        ("pending", "Ожидает оплаты"),
+        ("paid", "Оплачено"),
+        ("failed", "Ошибка оплаты"),
+    ]
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        verbose_name="покупатель",
+        help_text="укажите покупателя",
+        **NULLABLE,
+    )
     course = models.ForeignKey(
         "lms.Course",
         on_delete=models.CASCADE,
         verbose_name="курс",
         related_name="payment",
-        help_text="укажите название курса"
+        help_text="укажите название курса",
     )
 
     lesson = models.ForeignKey(
@@ -88,29 +99,41 @@ class Payment(models.Model):
         verbose_name="урок",
         **NULLABLE,
         related_name="payment",
-        help_text="укажите название урока"
+        help_text="укажите название урока",
     )
-    payment_amount = models.PositiveIntegerField(verbose_name="cумма оплаты", help_text="укажите сумму оплаты")
+    payment_amount = models.PositiveIntegerField(
+        verbose_name="cумма оплаты", help_text="укажите сумму оплаты"
+    )
     payment_method = models.CharField(
-        max_length=20, choices=PAYMENT_METHODS, verbose_name="способ оплаты", help_text="укажите способ оплаты"
+        max_length=20,
+        choices=PAYMENT_METHODS,
+        verbose_name="способ оплаты",
+        help_text="укажите способ оплаты",
     )
 
     session_id = models.CharField(
-            max_length=255,
-            verbose_name="идентификатор сессии",
-            help_text="укажите идентификатор сессии",
-            **NULLABLE,
-        )
+        max_length=255,
+        verbose_name="идентификатор сессии",
+        help_text="укажите идентификатор сессии",
+        **NULLABLE,
+    )
 
     link = models.URLField(
-            max_length=400,
-            verbose_name="ссылка на оплату",
-            help_text="укажите ссылку на оплату",
-            **NULLABLE,
-        )
+        max_length=400,
+        verbose_name="ссылка на оплату",
+        help_text="укажите ссылку на оплату",
+        **NULLABLE,
+    )
+    payment_status = models.CharField(
+        max_length=20,
+        choices=PAYMENT_STATUS_CHOICES,
+        default="pending",
+        verbose_name="статус оплаты",
+        help_text="укажите статус оплаты",
+    )
 
     def __str__(self):
-        return f"Оплачено {self.user} за {self.paid_course} на сумму {self.payment_amount}, метод оплаты: {self.payment_method}"
+        return f"Оплачено {self.user} за {self.course} на сумму {self.payment_amount}, метод оплаты: {self.payment_method}"
 
     class Meta:
         verbose_name = "платеж"

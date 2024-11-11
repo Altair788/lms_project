@@ -33,7 +33,7 @@ class CourseSerializer(serializers.ModelSerializer):
         return course.lesson_set.count()
 
     def get_is_subscribed(self, course):
-        request = self.context.get('request')
+        request = self.context.get("request")
         if not request.user.is_authenticated:
             return False
         return Subscription.objects.filter(user=request.user, course=course).exists()
