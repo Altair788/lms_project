@@ -30,6 +30,8 @@ class Course(models.Model):
         verbose_name="Владелец",
         help_text="Укажите владельца",
     )
+    # Поле для отслеживания времени последнего обновления
+    last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Курс {self.title}"

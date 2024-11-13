@@ -1,5 +1,8 @@
+import json
+
 import requests
 import stripe
+from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from rest_framework import status
 
 from config.settings import CUR_API_KEY, CUR_API_URL, STRIPE_API_KEY
@@ -56,3 +59,18 @@ def get_session_data(session_id: str):
     except stripe.error.StripeError as e:
         print(f"Stripe error: {str(e)}")
         return None
+
+
+#
+#   реализовал в config.settings
+# def set_schedule(*args, **kwargs):
+#     schedule, created = IntervalSchedule.objects.get_or_create(
+#         every=10,
+#         period=IntervalSchedule.SECONDS,
+#     )
+#     PeriodicTask.objects.create(
+#         interval=schedule,
+#         name='check_user_last_login',
+#         task='users.tasks.check_last_login',
+#         expires=datetime.utcnow() + timedelta(seconds=30)
+#     )
