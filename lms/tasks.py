@@ -1,5 +1,6 @@
 import smtplib
-
+from datetime import timedelta
+from django.utils import timezone
 from celery import shared_task
 
 from django.core.mail import send_mail
@@ -16,6 +17,12 @@ def send_update_notification(course_id):
     from .models import Course, Subscription
 
     course = Course.objects.get(id=course_id)
+
+    # Проверка, не прошло ли более 4 часов с последнего изменения курса(доп задание)
+    if timezone.now() - course.last_updated < timedelta(hours=4):
+        print(f"Уведомление не отправлено: курс '{course.title}' обновлялся менее 4 часов назад.")
+        return
+
     subscribers = Subscription.objects.filter(course=course)
 
     for subscriber in subscribers:
