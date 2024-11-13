@@ -126,29 +126,30 @@ class CheckoutSessionsRetrieveAPIView(RetrieveAPIView):
             return Response(serializer.data)
 
         except Payment.DoesNotExist:
-            return Response({
-                'error': 'Payment not found'
-            }, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         except StripeError as se:
-            return Response({
-                'error': 'Stripe error occurred',
-                'details': str(se)
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Stripe error occurred", "details": str(se)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         except RequestException as re:
-            return Response({
-                'error': 'Error occurred while retrieving session data',
-                'details': str(re)
-            }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            return Response(
+                {
+                    "error": "Error occurred while retrieving session data",
+                    "details": str(re),
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
 
         except ValueError as ve:
-            return Response({
-                'error': 'Invalid data provided',
-                'details': str(ve)
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid data provided", "details": str(ve)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         except Exception as e:
-            return Response({
-                'error': str(e)
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

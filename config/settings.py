@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "drf_yasg",
     "django_celery_beat",
-
 ]
 
 MIDDLEWARE = [
@@ -112,13 +111,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT"))  # Преобразуем в int, так как это число
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", True) == "True"
-EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", False) == "False"
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False") == "True"  # Преобразование из строки в bool
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "True") == "True"  # Преобразование из строки в bool
 
 
 SERVER_EMAIL = EMAIL_HOST_USER
@@ -165,14 +165,48 @@ STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
 CUR_API_URL = "https://api.currencyapi.com/"
 CUR_API_KEY = os.getenv("CUR_API_KEY")
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "django.log"),  # Путь к файлу логов
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}
+
 
 # Настройки для Celery
 
 # URL-адрес брокера сообщений (Например, Redis, который по умолчанию работает на порту 6379)
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "UTC"
@@ -185,10 +219,12 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 
 
 # Настройки для Celery beat
-#
-# CELERY_BEAT_SCHEDULE = {
-#     'task-name': {
-#         'task': 'myapp.tasks.my_task',  # Путь к задаче
-#         'schedule': timedelta(minutes=10),  # Расписание выполнения задачи (например, каждые 10 минут)
-#     },
-# }
+
+CELERY_BEAT_SCHEDULE = {
+    "task-name": {
+        "task": "users.tasks.check_last_login",  # Путь к задаче
+        "schedule": timedelta(
+            minutes=10
+        ),  # Расписание выполнения задачи (например, каждые 10 минут)
+    },
+}
