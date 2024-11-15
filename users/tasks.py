@@ -5,6 +5,9 @@ from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.utils import timezone
 
+from users.models import User
+
+
 #  вариант проверки по одному пользователю
 # @shared_task
 # def check_last_login(user_id):
@@ -35,3 +38,10 @@ def check_last_login():
             user.save()
     except IntegrityError as e:
         print(f"Ошибка при обновлении пользователя: {e}")
+
+# @shared_task
+# def check_last_login():
+#     month_ago = timezone.now() - timedelta(days=30)
+#
+#     users = User.objects.filter(is_active=True, last_login__lte=month_ago)
+#     users.update(is_active=False)
