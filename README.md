@@ -25,8 +25,8 @@
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone <https://github.com/Altair788/hw_24.1.git>
-   cd <название папки>
+   git clone <https://github.com/Altair788/LMS_online_school.git>
+   cd <LMS_online_school>
    ```
 
 2. Установите Poetry, если он еще не установлен:
