@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "hw24-1"
+name = "hw24_1"
 version = "0.1.0"
 description = ""
 authors = ["Eduard Slobodyanik <slobodyanik.ed@gmail.com>"]
