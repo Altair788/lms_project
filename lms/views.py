@@ -127,6 +127,7 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
 
 
 class SubscriptionAPIView(APIView):
+    serializer_class = SubscriptionSerializer
     permission_classes = [
         IsAuthenticated
     ]  # Убедитесь, что только аутентифицированные пользователи могут управлять подписками
