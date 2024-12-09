@@ -229,7 +229,7 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
 
-# Настройки для Celery beat
+# Настройки для Celery beat_
 
 CELERY_BEAT_SCHEDULE = {
     "task-name": {
@@ -247,4 +247,15 @@ SPECTACULAR_SETTINGS = {
     'POSTPROCESSING_HOOKS': [
         'drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields',
     ],
+}
+
+
+REDOC_SETTINGS = {
+    'LAZY_RENDERING': False,
+    'HIDE_HOSTNAME': False,
+    'EXPAND_RESPONSES': '200,201',
+    'PATH_IN_MIDDLE': False,
+    'NATIVE_SCROLLBARS': False,
+    'REQUIRED_PROPS_FIRST': False,
+    'LANGUAGE': 'ru',  # Установите язык на русский
 }

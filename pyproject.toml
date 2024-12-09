@@ -6,7 +6,7 @@ authors = ["Eduard Slobodyanik <slobodyanik.ed@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.12"
 black = "^24.10.0"
 isort = "^5.13.2"
 django = "4.2.2"
