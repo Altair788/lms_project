@@ -3,6 +3,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
+from drf_spectacular.settings import SpectacularSettings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,8 +36,9 @@ INSTALLED_APPS = [
     "lms",
     "django_filters",
     "rest_framework_simplejwt",
-    "drf_yasg",
     "django_celery_beat",
+    'drf_spectacular',
+
 ]
 
 MIDDLEWARE = [
@@ -149,6 +151,15 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    "DEFAULT_RENDERER_CLASSES": (
+        "djangorestframework_camel_case.render.CamelCaseJSONRenderer",
+        "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer",),
+    "DEFAULT_PARSER_CLASSES": (
+        "djangorestframework_camel_case.parser.CamelCaseJSONParser",
+
+    ),
+
 }
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
@@ -227,4 +238,24 @@ CELERY_BEAT_SCHEDULE = {
             minutes=10
         ),  # Расписание выполнения задачи (например, каждые 10 минут)
     },
+}
+
+
+
+SPECTACULAR_SETTINGS = {
+    'CAMELIZE_NAMES': True,  # Включите преобразование имен в camelCase
+    'POSTPROCESSING_HOOKS': [
+        'drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields',
+    ],
+}
+
+
+REDOC_SETTINGS = {
+    'LAZY_RENDERING': False,
+    'HIDE_HOSTNAME': False,
+    'EXPAND_RESPONSES': '200,201',
+    'PATH_IN_MIDDLE': False,
+    'NATIVE_SCROLLBARS': False,
+    'REQUIRED_PROPS_FIRST': False,
+    'LANGUAGE': 'ru',  # Установите язык на русский
 }

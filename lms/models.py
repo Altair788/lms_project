@@ -77,7 +77,7 @@ class Lesson(models.Model):
         on_delete=models.CASCADE,
         **NULLABLE,
         verbose_name="Владелец",
-        help_text="Укажите владельца",
+        help_text="Укажите владельца.",
     )
 
     def __str__(self):

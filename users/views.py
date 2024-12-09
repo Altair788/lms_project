@@ -43,6 +43,7 @@ class UserUpdateAPIView(generics.UpdateAPIView):
 
 
 class UserDestroyAPIView(generics.DestroyAPIView):
+    serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
 
@@ -52,8 +53,8 @@ class PaymentListAPIView(generics.ListAPIView):
     queryset = Payment.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_fields = (
-        "paid_course",
-        "paid_lesson",
+        "course",
+        "lesson",
         "payment_method",
     )
 
