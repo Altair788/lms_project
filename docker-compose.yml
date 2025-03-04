@@ -22,16 +22,13 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - redis
-      - db
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - .env
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-          cpus: '0.25'
+
 
   db:
     container_name: lms-db
@@ -46,12 +43,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.5'
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
 
   redis:
     image: redis:latest
@@ -61,35 +58,38 @@ services:
     command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
     env_file:
       - .env
-    restart: unless-stopped
-    mem_limit: 256M
-    cpus: 0.25
+    healthcheck:
+      test: redis-cli ping
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
 
   celery:
     container_name: lms-celery_worker
     build: .
     command: celery -A config worker -l info
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - .env
-    restart: unless-stopped
-    mem_limit: 512M
-    cpus: 0.5
+
 
   celery-beat:
     container_name: lms-celery_beat
     build: .
     command: celery -A config beat -l info
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - .env
-    restart: unless-stopped
-    mem_limit: 256M
-    cpus: 0.25
+
 
 networks:
   default:
