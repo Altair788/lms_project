@@ -1,4 +1,3 @@
-
 # Платформа для онлайн-обучения
 
 ## Описание проекта
@@ -25,8 +24,8 @@
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone <https://github.com/Altair788/LMS_online_school.git>
-   cd <LMS_online_school>
+   git clone https://github.com/Altair788/LMS_online_school.git
+   cd LMS_online_school
    ```
 
 2. Установите Poetry, если он еще не установлен:
@@ -48,17 +47,113 @@
 
 6. Запустите Celery worker:
    ```bash
-   poetry run celery -A <имя_проекта> worker --loglevel=info
+   poetry run celery -A config worker --loglevel=info
    ```
 
 7. Запустите celery-beat для периодических задач:
    ```bash
-   poetry run celery -A <имя_проекта> beat --loglevel=info
+   poetry run celery -A config beat --loglevel=info
    ```
+
+## Запуск проекта через Docker Compose
+
+### Предварительные требования
+
+- Установленный Docker и Docker Compose
+- Файл .env с необходимыми переменными окружения
+
+### Шаги по запуску
+
+1. Убедитесь, что вы находитесь в корневой директории проекта.
+
+2. Создайте файл .env и заполните его необходимыми переменными окружения.
+
+3. Запустите проект:
+   ```bash
+   docker-compose up -d --build
+   ```
+
+4. После успешного запуска, приложение будет доступно по адресу `http://localhost:8000`.
+
+### Запуск отдельных контейнеров
+
+Вы можете запустить отдельные контейнеры с помощью следующих команд:
+
+- Backend: `docker-compose up -d lms-backend`
+- Database: `docker-compose up -d lms-db`
+- Redis: `docker-compose up -d lms-redis`
+- Celery Worker: `docker-compose up -d lms-celery_worker`
+- Celery Beat: `docker-compose up -d lms-celery_beat`
+
+### Проверка работоспособности сервисов
+
+- **Django backend**: 
+  Откройте `http://localhost:8000/admin/` в браузере.
+
+- **PostgreSQL**: 
+  ```bash
+  docker exec -it lms-db psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+  ```
+  Внутри psql выполните `\dt` для просмотра таблиц.
+
+- **Redis**: 
+  ```bash
+  docker exec -it lms-redis redis-cli ping
+  ```
+  Должен быть ответ "PONG".
+
+- **Celery Worker**: 
+  ```bash
+  docker logs lms-celery_worker
+  ```
+  Проверьте логи на наличие ошибок.
+
+- **Celery Beat**: 
+  ```bash
+  docker logs lms-celery_beat
+  ```
+  Проверьте логи на наличие ошибок и запланированных задач.
+
+### Остановка проекта
+
+```bash
+docker-compose down
+```
+
+Для удаления всех данных:
+```bash
+docker-compose down -v
+```
+
+## Работа с базой данных в контейнере
+
+Для проверки состояния базы данных и выполнения SQL-запросов внутри контейнера, следуйте этим шагам:
+
+1. Войдите в контейнер базы данных:
+   ```
+   docker exec -it lms-db bash
+   ```
+
+2. Подключитесь к PostgreSQL:
+   ```
+   psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+   ```
+
+3. Внутри PostgreSQL вы можете использовать следующие команды:
+
+   - Показать список всех баз данных: `\l`
+   - Показать список всех таблиц в текущей базе данных: `\dt`
+   - Показать структуру конкретной таблицы: `\d `
+   - Выполнить SQL-запрос: `SELECT * FROM  LIMIT 5;`
+   - Показать список пользователей базы данных: `\du`
+
+4. Для выхода из PostgreSQL введите: `\q`
+
+5. Для выхода из контейнера введите: `exit`
 
 ## Тестирование
 
-Проект включает тесты для проверки корректности работы CRUD операций и функционала подписки на обновления курса. Используйте метод `setUp` для заполнения базы данных тестовыми данными.
+Проект включает тесты для проверки CRUD операций и функционала подписки на обновления курса.
 
 ## Автор
 Telegram @eslobodyanik
