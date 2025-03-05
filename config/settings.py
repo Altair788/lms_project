@@ -214,10 +214,14 @@ LOGGING = {
 # Настройки для Celery
 
 # URL-адрес брокера сообщений (Например, Redis, который по умолчанию работает на порту 6379)
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+# CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+# настройки для запуска в контейнере локально
+CELERY_BROKER_URL = "redis://redis:6379/0"
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+# CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+# настройки для запуска в контейнере локально
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "UTC"
