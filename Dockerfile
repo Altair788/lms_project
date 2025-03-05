@@ -16,10 +16,6 @@ RUN poetry config virtualenvs.create false && \
 
 COPY . /app
 
-ENV SECRET_KEY="django-insecure-cj3+7rdgt=*04s^=w0a1o3*&qjjvv@@h@@m4l!luo87$+p8qn#"
-ENV CELERY_BROKER_URL="redis://redis:6379/0"
-ENV CELERY_BACKEND="redis://redis:6379/0"
-
 RUN mkdir -p /app/media
 
 EXPOSE 8000
