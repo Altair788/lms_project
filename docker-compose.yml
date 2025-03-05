@@ -1,6 +1,4 @@
 # 1
-version: '3.9'
-
 services:
   backend:
     container_name: lms-backend
@@ -9,13 +7,7 @@ services:
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     environment:
-      - DEBUG=True
       - POSTGRES_HOST=db
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-
     volumes:
       - .:/code
       - static_volume:/code/static
@@ -42,7 +34,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+      - ${POSTGRES_PORT}:5432
     healthcheck:
       test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
       interval: 3s
@@ -54,7 +46,7 @@ services:
     image: redis:latest
     container_name: lms-redis
     ports:
-      - ${REDIS_PORT}:${REDIS_PORT}
+      - ${REDIS_PORT}:6379
     command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
     env_file:
       - .env
