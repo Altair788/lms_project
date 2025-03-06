@@ -1,0 +1,36 @@
+name: Django CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+     runs-on: ubuntu-latest
+
+     steps:
+       # клонирование репо с исходным кодом
+       - name: Check out code
+         uses: actions/checkout@v3
+       # установка Python нужной версии
+       - name: Set up Python
+         uses: actions/setup-python@v4
+         with:
+           python-version: '3.10'
+
+       # установка зависимостей проекта
+       - name: Install Poetry
+         uses: snok/install-poetry@v1
+         with:
+           version: 1.5.1
+           virtualenvs-create: true
+           virtualenvs-in-project: true
+
+       - name: Install dependencies
+         run: poetry install
+
+       # выполнение миграции БД для подготовки схемы
+       - name: Run migrations
+         run: poetry run python manage.py migrate
+
+       # запуск тестов для проверки работоспособности приложения
+       - name: Run tests
+         run: poetry run python manage.py test
