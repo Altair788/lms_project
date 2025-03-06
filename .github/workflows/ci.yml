@@ -10,11 +10,21 @@ jobs:
        # клонирование репо с исходным кодом
        - name: Check out code
          uses: actions/checkout@v3
+
        # установка Python нужной версии
        - name: Set up Python
          uses: actions/setup-python@v4
          with:
            python-version: '3.12.9'
+
+       # кеширование зависимостей
+       - name: Cache Poetry dependencies
+         uses: actions/cache@v3
+         with:
+           path: ~/.cache/pypoetry
+           key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+           restore-keys: |
+             ${{ runner.os }}-poetry-
 
        # установка зависимостей проекта
        - name: Install Poetry
