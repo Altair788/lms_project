@@ -61,26 +61,27 @@ class CourseAPITestCase(APITestCase):
             "previous": None,
             "results": [
                 {
-                    "countLessons": 1,
-                    "description": self.course.description,
                     "id": self.course.pk,
-                    "isSubscribed": False,
                     "lessons": [
                         {
-                            "course": self.course.pk,
-                            "description": None,
                             "id": self.lesson.pk,
                             "linkVideo": None,
-                            "owner": self.user.pk,
-                            "preview": None,
                             "title": self.lesson.title,
+                            "description": None,
+                            "preview": None,
+                            "course": self.course.pk,
+                            "owner": self.user.pk
                         }
                     ],
-                    "owner": self.user.pk,
+                    "countLessons": 1,
+                    "isSubscribed": False,
                     "preview": None,
                     "title": self.course.title,
+                    "description": self.course.description,
+                    "lastUpdated": self.course.last_updated.isoformat().replace('+00:00', 'Z'),
+                    "owner": self.user.pk
                 }
-            ],
+            ]
         }
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
