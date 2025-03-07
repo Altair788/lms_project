@@ -71,15 +71,18 @@ jobs:
           POSTGRES_USER: altair
           POSTGRES_PASSWORD: gI2onNlGdh1D
           POSTGRES_HOST: localhost
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: poetry run python manage.py migrate
 
       # запуск тестов для проверки работоспособности приложения
       - name: Run tests
-        env:
-          POSTGRES_DB: hw24_1_db
-          POSTGRES_USER: altair
-          POSTGRES_PASSWORD: gI2onNlGdh1D
-          POSTGRES_HOST: localhost
+        # закомментировал, так как в settings заменен на леговесную SQLite
+#        env:
+#          POSTGRES_DB: hw24_1_db
+#          POSTGRES_USER: altair
+#          POSTGRES_PASSWORD: gI2onNlGdh1D
+#          POSTGRES_HOST: localhost
+#          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: poetry run python manage.py test
 
   # настройка докер - образов приложения  в рамках git_hub actions
