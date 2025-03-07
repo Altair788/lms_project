@@ -30,14 +30,14 @@ class CourseAPITestCase(APITestCase):
     def test_course_create(self):
         url = reverse("lms:courses-list")
         data = {"title": "Python beginners course"}
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Course.objects.all().count(), 2)
 
     def test_course_update(self):
         url = reverse("lms:courses-detail", args=(self.course.pk,))
         data = {"title": "Java beginners course"}
-        response = self.client.patch(url, data)
+        response = self.client.patch(url, data, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data.get("title"), "Java beginners course")
 
@@ -64,13 +64,13 @@ class CourseAPITestCase(APITestCase):
                     "count_lessons": 1,
                     "description": self.course.description,
                     "id": self.course.pk,
-                    "is_subscribed": False,
+                    "isSubscribed": False,
                     "lessons": [
                         {
                             "course": self.course.pk,
                             "description": self.lesson.description,
                             "id": self.lesson.pk,
-                            "link_video": self.lesson.link_video,
+                            "linkVideo": self.lesson.link_video,
                             "owner": self.user.pk,
                             "preview": self.lesson.preview,
                             "title": self.lesson.title,
@@ -100,7 +100,7 @@ class SubscriptionsAPITestCase(APITestCase):
 
     def test_subscriptions_manage(self):
         url = reverse("lms:subscriptions-manage", args=(self.course.pk,))
-        response = self.client.post(url)
+        response = self.client.post(url, content_type="application/json")
         # pretty_json = json.dumps(response.json(), indent=4, sort_keys=True)
         # print(pretty_json)
         data = response.json()
@@ -133,7 +133,7 @@ class LessonAPITestCase(APITestCase):
     def test_lesson_create(self):
         url = reverse("lms:lessons-create")
         data = {"title": "lesson 1", "course": self.course.pk}
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Lesson.objects.all().count(), 2)
 
@@ -142,7 +142,7 @@ class LessonAPITestCase(APITestCase):
         data = {
             "title": "lesson 2",
         }
-        response = self.client.patch(url, data)
+        response = self.client.patch(url, data, content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data.get("title"), "lesson 2")
@@ -152,7 +152,7 @@ class LessonAPITestCase(APITestCase):
         data = {
             "link_video": "https://yandex.ru/video/search?text=%D0%B2%D0%B8%D0%B4%D0%B5%D0%BE",
         }
-        response = self.client.patch(url, data)
+        response = self.client.patch(url, data, content_type="application/json")
 
         # pretty_json = json.dumps(response.json(), indent=4, sort_keys=True)
         # print(pretty_json)
@@ -187,7 +187,7 @@ class LessonAPITestCase(APITestCase):
                     "course": self.course.pk,
                     "description": self.lesson.description,
                     "id": self.lesson.pk,
-                    "link_video": self.lesson.link_video,
+                    "linkVideo": self.lesson.link_video,
                     "owner": self.user.pk,
                     "preview": None,
                     "title": self.lesson.title,
