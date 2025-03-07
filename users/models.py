@@ -133,7 +133,10 @@ class Payment(models.Model):
     )
 
     def __str__(self):
-        return f"Оплачено {self.user} за {self.course} на сумму {self.payment_amount}, метод оплаты: {self.payment_method}"
+        return (
+            f"Оплачено {self.user} за {self.course} "
+            f"на сумму {self.payment_amount}, метод оплаты: {self.payment_method}"
+        )
 
     class Meta:
         verbose_name = "платеж"

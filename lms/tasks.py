@@ -7,7 +7,6 @@ from django.core.mail import send_mail
 from django.utils import timezone
 
 from config import settings
-from lms.models import Course
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +22,9 @@ def send_update_notification(course_id):
         return
 
         # Проверка, не прошло ли более 4 часов с последнего изменения курса(доп задание)
-    if timezone.now() - course.last_updated < timedelta(hours=4):
-        print(
-            f"Уведомление не отправлено: курс '{course.title}' обновлялся менее 4 часов назад."
-        )
+    if (timezone.now() - course.last_updated <
+            timedelta(hours=4)):
+        print(f"Уведомление не отправлено: курс '{course.title}' обновлялся менее 4 часов назад.")
         return
 
     subscribers = Subscription.objects.filter(course=course)

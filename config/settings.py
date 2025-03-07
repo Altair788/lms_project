@@ -1,9 +1,11 @@
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
+
 from dotenv import load_dotenv
-from drf_spectacular.settings import SpectacularSettings
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,8 +39,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework_simplejwt",
     "django_celery_beat",
-    'drf_spectacular',
-
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -74,11 +75,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("NAME"),
-        "USER": os.getenv("USER"),
-        "PASSWORD": os.getenv("PASSWORD"),
-        "HOST": os.getenv("HOST"),
-        "PORT": os.getenv("PORT"),
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST", "db"),
+        "PORT": os.getenv("POSTGRES_PORT", "5432"),
     }
 }
 
@@ -106,7 +107,18 @@ USE_I18N = True
 
 USE_TZ = True
 
+
 STATIC_URL = "static/"
+
+STATICFILES_DIRS = (
+    [os.path.join(BASE_DIR, "static")]
+    if (
+        os.path.exists(os.path.join(BASE_DIR, "static")) and
+        os.listdir(os.path.join(BASE_DIR, "static"))
+    )
+    else []
+)
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -116,11 +128,15 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT"))  # Преобразуем в int, так как это число
+EMAIL_PORT = os.getenv("EMAIL_PORT")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False") == "True"  # Преобразование из строки в bool
-EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "True") == "True"  # Преобразование из строки в bool
+EMAIL_USE_TLS = (
+    os.getenv("EMAIL_USE_TLS", "False") == "True"
+)  # Преобразование из строки в bool
+EMAIL_USE_SSL = (
+    os.getenv("EMAIL_USE_SSL", "True") == "True"
+)  # Преобразование из строки в bool
 
 
 SERVER_EMAIL = EMAIL_HOST_USER
@@ -151,15 +167,14 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_RENDERER_CLASSES": (
         "djangorestframework_camel_case.render.CamelCaseJSONRenderer",
-        "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer",),
+        "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer",
+    ),
     "DEFAULT_PARSER_CLASSES": (
         "djangorestframework_camel_case.parser.CamelCaseJSONParser",
-
     ),
-
 }
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
@@ -214,10 +229,16 @@ LOGGING = {
 # Настройки для Celery
 
 # URL-адрес брокера сообщений (Например, Redis, который по умолчанию работает на порту 6379)
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+# CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+# настройки для запуска в контейнере локально
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+# CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+# настройки для запуска в контейнере локально
+
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "UTC"
@@ -241,21 +262,34 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 
-
 SPECTACULAR_SETTINGS = {
-    'CAMELIZE_NAMES': True,  # Включите преобразование имен в camelCase
-    'POSTPROCESSING_HOOKS': [
-        'drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields',
+    "CAMELIZE_NAMES": True,  # Включите преобразование имен в camelCase
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields",
     ],
 }
 
 
 REDOC_SETTINGS = {
-    'LAZY_RENDERING': False,
-    'HIDE_HOSTNAME': False,
-    'EXPAND_RESPONSES': '200,201',
-    'PATH_IN_MIDDLE': False,
-    'NATIVE_SCROLLBARS': False,
-    'REQUIRED_PROPS_FIRST': False,
-    'LANGUAGE': 'ru',  # Установите язык на русский
+    "LAZY_RENDERING": False,
+    "HIDE_HOSTNAME": False,
+    "EXPAND_RESPONSES": "200,201",
+    "PATH_IN_MIDDLE": False,
+    "NATIVE_SCROLLBARS": False,
+    "REQUIRED_PROPS_FIRST": False,
+    "LANGUAGE": "ru",  # Установите язык на русский
 }
+
+
+# CICD ([flake8])
+# это нужно, чтобы при запуске тестов использовалась легкая SQLite, а не PostgreSQL
+
+if "test" in sys.argv:
+    CELERY_TASK_ALWAYS_EAGER = True  # Выполнять задачи синхронно
+    CELERY_TASK_EAGER_PROPAGATES = True  # Пропускать ошибки из задач
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "test_db.sqlite3",
+        }
+    }

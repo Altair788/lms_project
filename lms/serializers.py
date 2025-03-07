@@ -24,6 +24,7 @@ class CourseSerializer(serializers.ModelSerializer):
     lessons = LessonSerializer(many=True, source="lesson_set", required=False)
     count_lessons = SerializerMethodField()
     is_subscribed = SerializerMethodField()
+    preview = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Course
