@@ -36,7 +36,7 @@ jobs:
               .venv/lib/python3.12/site-packages/phonenumbers/geodata/,
               */migrations/*
           max-line-length = 120
-          ignore = F401, W504" > .flake8
+          ignore = W504" > .flake8
           poetry run flake8 .
   
   
