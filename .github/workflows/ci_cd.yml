@@ -88,6 +88,9 @@ jobs:
 
       # запуск тестов для проверки работоспособности приложения
       - name: Run tests
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          run: poetry run python manage.py test
         # закомментировал, так как в settings заменен на леговесную SQLite
 #        env:
 #          POSTGRES_DB: hw24_1_db
