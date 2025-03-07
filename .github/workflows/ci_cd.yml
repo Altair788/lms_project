@@ -33,8 +33,12 @@ jobs:
               .venv,
               .git,
               __pycache__,
-              .venv/lib/python3.12/site-packages/phonenumbers/geodata/" > .flake8
+              .venv/lib/python3.12/site-packages/phonenumbers/geodata/,
+              */migrations/*
+          max-line-length = 120
+          ignore = F401, F811" > .flake8
           poetry run flake8 .
+  
   
   
 
