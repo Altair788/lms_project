@@ -7,7 +7,6 @@ from django.utils import timezone
 
 from users.models import User
 
-
 #  вариант проверки по одному пользователю
 # @shared_task
 # def check_last_login(user_id):

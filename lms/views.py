@@ -6,7 +6,8 @@ from rest_framework.views import APIView
 
 from lms.models import Course, Lesson, Subscription
 from lms.paginations import LmsPaginator
-from lms.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer
+from lms.serializers import (CourseSerializer, LessonSerializer,
+                             SubscriptionSerializer)
 from lms.tasks import send_update_notification
 from users.permissions import IsModer, IsOwner
 
