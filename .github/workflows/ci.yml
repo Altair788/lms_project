@@ -1,46 +1,166 @@
-name: Django CI
+name: Django CI/CD Pipeline
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
+  # блокирующие проверки (линтеры и тесты)
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.9'
+
+      # установка зависимостей проекта
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run Flake8
+        run: flake8 .
+
+
+
   test:
-     runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-     steps:
-       # клонирование репо с исходным кодом
-       - name: Check out code
-         uses: actions/checkout@v3
+    steps:
+      # клонирование репо с исходным кодом
+      - name: Check out code
+        uses: actions/checkout@v3
 
-       # установка Python нужной версии
-       - name: Set up Python
-         uses: actions/setup-python@v4
-         with:
-           python-version: '3.12.9'
+      # установка Python нужной версии
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.9'
 
-       # кеширование зависимостей
-       - name: Cache Poetry dependencies
-         uses: actions/cache@v3
-         with:
-           path: ~/.cache/pypoetry
-           key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-           restore-keys: |
-             ${{ runner.os }}-poetry-
+      # кеширование зависимостей
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
 
-       # установка зависимостей проекта
-       - name: Install Poetry
-         uses: snok/install-poetry@v1
-         with:
-           version: 1.5.1
-           virtualenvs-create: true
-           virtualenvs-in-project: true
+      # установка зависимостей проекта
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
 
-       - name: Install dependencies
-         run: poetry install
+      - name: Install dependencies
+        run: poetry install
 
-       # выполнение миграции БД для подготовки схемы
-       - name: Run migrations
-         run: poetry run python manage.py migrate
+      # выполнение миграции БД для подготовки схемы
+      - name: Run migrate
+        env:
+          POSTGRES_DB: hw24_1_db
+          POSTGRES_USER=altair
+          POSTGRES_PASSWORD=gI2onNlGdh1D
+          POSTGRES_HOST=db
+          POSTGRES_PORT=5432
+        run: poetry run python manage.py migrate
 
-       # запуск тестов для проверки работоспособности приложения
-       - name: Run tests
-         run: poetry run python manage.py test
+      # запуск тестов для проверки работоспособности приложения
+      - name: Run tests
+        run: poetry run python manage.py test
+
+  # настройка докер - образов приложения  в рамках git_hub actions
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      # клонируем код из репо
+      - name: Check out code
+        uses: actions/checkout@v3
+      # авторизуемся в докерхаб, использую данные из секретов
+      - name: Login in Docker Hub
+        run: echo ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+      # собираем докер - образ, используя тег из последнего комита
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }} .
+
+      # отправляем собранный образ в Docker Hub
+      - name: Push Docker image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+
+      # указываем необходимость выполнения этой job для deploy
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    # указываем, что будет запускаться только после успешного выполнения теста
+    needs: build
+
+    steps:
+      # настройка ssh - подключения из приватного ключа из github secrets
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+#      # используем rsync для копирования файлов проекта на удаленный сервер,
+#      # исключая ненужные файлы (pycache)
+#      - name: Copy project files to sever
+#        run: |
+#          rsync -avz --exclude '__pycache__' . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_DIR }}
+#
+#      # устанавливаем зависимости на сервере в виртуальном окружении python
+#      - name: Install dependencies on server
+#        run: |
+#          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+#            cd ${{ secrets.DEPLOY_DIR }}
+#            curl -sSL https://install.python-poetry.org | python3 -
+#            export PATH="/home/${{ secrets.SSH_USER }}/.local/bin:$PATH"
+#            poetry install
+#          EOF
+#      # применяем миграции БД на сервере
+#      - name: Apply migrations on server
+#        run: |
+#          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+#            cd ${{ secrets.DEPLOY_DIR }}
+#            poetry run pyton manage.py migrate
+#          EOF
+#
+#      # реализуем сборку и размещение статических файлов на сервере
+#      - name: Collect static files on server
+#        run: |
+#          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+#            cd ${{ secrets.DEPLOY_DIR }}
+#            poetry run python manage.py collectstatic --noinput
+#          EOF
+#      # перезапускаем сервис, который управляет вашим приложением
+#      - name: Restart application
+#        run: |
+#          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+#            sudo systemctl restart myapp.service
+#          EOF
+#
+#
+#
+
+
+      # Подключаемся к серверу и выполняем команды развертывания докер - контейнера
+      - name: Deploy to Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+            docker stop myapp || true
+            docker rm myapp || true
+            docker run -d --name myapp -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+          EOF
