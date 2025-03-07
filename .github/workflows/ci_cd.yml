@@ -154,3 +154,6 @@ jobs:
               -e CUR_API_KEY='${{ secrets.CUR_API_KEY }}' \
               ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
           EOF
+      - name: Stop SSH agent
+        if: always()
+        run: ssh-agent -k
