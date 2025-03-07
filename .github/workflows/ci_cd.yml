@@ -143,5 +143,6 @@ jobs:
             docker rm myapp || true
             docker run -d --name myapp -p 80:8000 \
           -e SECRET_KEY='${{ secrets.SECRET_KEY }}' \
+          -e ALLOWED_HOSTS='130.193.54.21,localhost,127.0.0.1' \
           ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
           EOF
