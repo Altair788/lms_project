@@ -39,6 +39,7 @@ def check_last_login():
     except IntegrityError as e:
         print(f"Ошибка при обновлении пользователя: {e}")
 
+
 # @shared_task
 # def check_last_login():
 #     month_ago = timezone.now() - timedelta(days=30)

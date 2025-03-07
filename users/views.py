@@ -8,9 +8,13 @@ from stripe import StripeError
 
 from users.models import Payment, User
 from users.serializers import PaymentSerializer, UserSerializer
-from users.services import (convert_rub_to_usd, create_stripe_price,
-                            create_stripe_product, create_stripe_session,
-                            get_session_data)
+from users.services import (
+    convert_rub_to_usd,
+    create_stripe_price,
+    create_stripe_product,
+    create_stripe_session,
+    get_session_data,
+)
 
 
 class UserCreateAPIView(CreateAPIView):

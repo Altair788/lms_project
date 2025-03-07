@@ -30,14 +30,18 @@ class CourseAPITestCase(APITestCase):
     def test_course_create(self):
         url = reverse("lms:courses-list")
         data = {"title": "Python beginners course"}
-        response = self.client.post(url, data=json.dumps(data), content_type="application/json")
+        response = self.client.post(
+            url, data=json.dumps(data), content_type="application/json"
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Course.objects.all().count(), 2)
 
     def test_course_update(self):
         url = reverse("lms:courses-detail", args=(self.course.pk,))
         data = {"title": "Java beginners course"}
-        response = self.client.patch(url, data=json.dumps(data), content_type="application/json")
+        response = self.client.patch(
+            url, data=json.dumps(data), content_type="application/json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data.get("title"), "Java beginners course")
 
@@ -70,7 +74,7 @@ class CourseAPITestCase(APITestCase):
                             "description": None,
                             "preview": None,
                             "course": self.course.pk,
-                            "owner": self.user.pk
+                            "owner": self.user.pk,
                         }
                     ],
                     "countLessons": 1,
@@ -78,10 +82,12 @@ class CourseAPITestCase(APITestCase):
                     "preview": None,
                     "title": self.course.title,
                     "description": self.course.description,
-                    "lastUpdated": self.course.last_updated.isoformat().replace('+00:00', 'Z'),
-                    "owner": self.user.pk
+                    "lastUpdated": self.course.last_updated.isoformat().replace(
+                        "+00:00", "Z"
+                    ),
+                    "owner": self.user.pk,
                 }
-            ]
+            ],
         }
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -136,7 +142,9 @@ class LessonAPITestCase(APITestCase):
     def test_lesson_create(self):
         url = reverse("lms:lessons-create")
         data = {"title": "lesson 1", "course": self.course.pk}
-        response = self.client.post(url, data=json.dumps(data),  content_type="application/json")
+        response = self.client.post(
+            url, data=json.dumps(data), content_type="application/json"
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Lesson.objects.all().count(), 2)
 
@@ -145,7 +153,9 @@ class LessonAPITestCase(APITestCase):
         data = {
             "title": "lesson 2",
         }
-        response = self.client.patch(url, data=json.dumps(data), content_type="application/json")
+        response = self.client.patch(
+            url, data=json.dumps(data), content_type="application/json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data.get("title"), "lesson 2")
@@ -155,7 +165,9 @@ class LessonAPITestCase(APITestCase):
         data = {
             "link_video": "https://yandex.ru/video/search?text=%D0%B2%D0%B8%D0%B4%D0%B5%D0%BE",
         }
-        response = self.client.patch(url, data=json.dumps(data), content_type="application/json")
+        response = self.client.patch(
+            url, data=json.dumps(data), content_type="application/json"
+        )
 
         # pretty_json = json.dumps(response.json(), indent=4, sort_keys=True)
         # print(pretty_json)
@@ -166,7 +178,9 @@ class LessonAPITestCase(APITestCase):
         # self.assertEqual(
         #     result.get("link_video"), ["Допускается ссылка только на youtube.com."]
         # )
-        self.assertEqual(response.data['link_video'], ['Допускается ссылка только на youtube.com.'])
+        self.assertEqual(
+            response.data["link_video"], ["Допускается ссылка только на youtube.com."]
+        )
 
     def test_lesson_delete(self):
         url = reverse("lms:lessons-delete", args=(self.lesson.pk,))
