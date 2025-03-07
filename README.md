@@ -155,5 +155,39 @@ docker-compose down -v
 
 Проект включает тесты для проверки CRUD операций и функционала подписки на обновления курса.
 
+## Настройка удаленного сервера и деплой
+
+1. Обновите систему:
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   ```
+
+2. Установите Docker, следуя [официальной инструкции](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository).
+
+3. Настройте файрвол:
+   ```bash
+   sudo ufw allow 22/tcp
+   sudo ufw allow 80/tcp
+   sudo ufw allow 443/tcp
+   sudo ufw enable
+   sudo ufw status
+   ```
+
+4. Настройте GitHub Secrets в настройках репозитория (Settings -> Secrets and variables -> Actions):
+   - Данные базы данных: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`, `POSTGRES_PORT`
+   - Настройки Django: `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`
+   - Доступ к Docker Hub: `DOCKER_HUB_USERNAME`, `DOCKER_HUB_ACCESS_TOKEN`
+   - SSH-доступ: `SSH_USER`, `SSH_KEY`, `SERVER_IP`
+   - Настройки Celery: `CELERY_BROKER_URL`, `CELERY_BACKEND`
+   - Настройки email: `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_SSL`, `EMAIL_USE_TLS`
+   - API ключи: `STRIPE_API_KEY`, `CUR_API_KEY`
+
+5. Запуск CI/CD:
+   - Push изменений в репозиторий автоматически запустит GitHub Actions workflow.
+   - Workflow выполнит линтинг, тесты, сборку Docker-образа и деплой на сервер.
+
+6. Проверка деплоя:
+   После завершения workflow, приложение должно быть доступно по IP-адресу сервера на порту 80.
+
 ## Автор
 Telegram @eslobodyanik
