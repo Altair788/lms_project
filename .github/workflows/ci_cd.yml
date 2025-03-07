@@ -34,7 +34,8 @@ jobs:
               .git,
               __pycache__,
               .venv/lib/python3.12/site-packages/phonenumbers/geodata/" > .flake8
-          flake8 .
+          poetry run flake8 .
+  
   
 
   test:
