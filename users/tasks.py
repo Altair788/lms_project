@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.utils import timezone
 
-from users.models import User
 
 #  вариант проверки по одному пользователю
 # @shared_task
@@ -37,7 +36,6 @@ def check_last_login():
             user.save()
     except IntegrityError as e:
         print(f"Ошибка при обновлении пользователя: {e}")
-
 
 # @shared_task
 # def check_last_login():
