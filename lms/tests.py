@@ -172,7 +172,7 @@ class LessonAPITestCase(APITestCase):
         # pretty_json = json.dumps(response.json(), indent=4, sort_keys=True)
         # print(pretty_json)
 
-        result = response.json()
+        # result = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # self.assertEqual(

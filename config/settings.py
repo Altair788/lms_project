@@ -3,9 +3,9 @@ import sys
 from datetime import timedelta
 from pathlib import Path
 
-from django.conf.global_settings import STATICFILES_DIRS
+
 from dotenv import load_dotenv
-from drf_spectacular.settings import SpectacularSettings
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

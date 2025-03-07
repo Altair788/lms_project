@@ -31,7 +31,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        course = serializer.save(owner=self.request.user)
+        serializer.save(owner=self.request.user)
 
     def get_permissions(self):
         if self.action in (
