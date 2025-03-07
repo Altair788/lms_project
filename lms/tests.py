@@ -61,18 +61,18 @@ class CourseAPITestCase(APITestCase):
             "previous": None,
             "results": [
                 {
-                    "count_lessons": 1,
+                    "countLessons": 1,
                     "description": self.course.description,
                     "id": self.course.pk,
                     "isSubscribed": False,
                     "lessons": [
                         {
                             "course": self.course.pk,
-                            "description": self.lesson.description,
+                            "description": None,
                             "id": self.lesson.pk,
-                            "linkVideo": self.lesson.link_video,
+                            "linkVideo": None,
                             "owner": self.user.pk,
-                            "preview": self.lesson.preview,
+                            "preview": None,
                             "title": self.lesson.title,
                         }
                     ],
