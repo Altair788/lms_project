@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -268,3 +269,15 @@ REDOC_SETTINGS = {
     'REQUIRED_PROPS_FIRST': False,
     'LANGUAGE': 'ru',  # Установите язык на русский
 }
+
+
+# CICD ([flake8])
+# это нужно, чтобы при запуске тестов использовалась легкая SQLite, а не PostgreSQL
+
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'test_db.sqlite3',
+        }
+    }
