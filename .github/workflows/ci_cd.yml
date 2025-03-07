@@ -79,9 +79,9 @@ jobs:
       # выполнение миграции БД для подготовки схемы
       - name: Run migrate
         env:
-          POSTGRES_DB: hw24_1_db
-          POSTGRES_USER: altair
-          POSTGRES_PASSWORD: gI2onNlGdh1D
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_HOST: localhost
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: poetry run python manage.py migrate
@@ -137,12 +137,28 @@ jobs:
       # Подключаемся к серверу и выполняем команды развертывания докер - контейнера
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
             docker stop myapp || true
             docker rm myapp || true
             docker run -d --name myapp -p 80:8000 \
-          -e SECRET_KEY='${{ secrets.SECRET_KEY }}' \
-          -e ALLOWED_HOSTS=['*'] \
-          ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+              -e SECRET_KEY='${{ secrets.SECRET_KEY }}' \
+              -e DEBUG='${{ secrets.DEBUG }}' \
+              -e ALLOWED_HOSTS='${{ secrets.ALLOWED_HOSTS }}' \
+              -e POSTGRES_DB='${{ secrets.POSTGRES_DB }}' \
+              -e POSTGRES_USER='${{ secrets.POSTGRES_USER }}' \
+              -e POSTGRES_PASSWORD='${{ secrets.POSTGRES_PASSWORD }}' \
+              -e POSTGRES_HOST='${{ secrets.POSTGRES_HOST }}' \
+              -e POSTGRES_PORT='${{ secrets.POSTGRES_PORT }}' \
+              -e CELERY_BROKER_URL='${{ secrets.CELERY_BROKER_URL }}' \
+              -e CELERY_BACKEND='${{ secrets.CELERY_BACKEND }}' \
+              -e EMAIL_HOST='${{ secrets.EMAIL_HOST }}' \
+              -e EMAIL_PORT='${{ secrets.EMAIL_PORT }}' \
+              -e EMAIL_HOST_USER='${{ secrets.EMAIL_HOST_USER }}' \
+              -e EMAIL_HOST_PASSWORD='${{ secrets.EMAIL_HOST_PASSWORD }}' \
+              -e EMAIL_USE_SSL='${{ secrets.EMAIL_USE_SSL }}' \
+              -e EMAIL_USE_TLS='${{ secrets.EMAIL_USE_TLS }}' \
+              -e STRIPE_API_KEY='${{ secrets.STRIPE_API_KEY }}' \
+              -e CUR_API_KEY='${{ secrets.CUR_API_KEY }}' \
+              ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
           EOF
