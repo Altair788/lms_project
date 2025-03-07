@@ -3,7 +3,7 @@ name: Django CI/CD Pipeline
 on: [ push, pull_request ]
 
 jobs:
-#  # блокирующие проверки (линтеры и тесты)
+#  # блокирующие проверки (линтеры и тесты).
 #  lint:
 #    runs-on: ubuntu-latest
 #    steps:
