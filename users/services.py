@@ -1,8 +1,5 @@
-import json
-
 import requests
 import stripe
-from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from rest_framework import status
 
 from config.settings import CUR_API_KEY, CUR_API_URL, STRIPE_API_KEY
@@ -59,7 +56,6 @@ def get_session_data(session_id: str):
     except stripe.error.StripeError as e:
         print(f"Stripe error: {str(e)}")
         return None
-
 
 #
 #   реализовал в config.settings
