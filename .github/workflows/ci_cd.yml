@@ -90,7 +90,7 @@ jobs:
       - name: Run tests
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          run: poetry run python manage.py test
+
         # закомментировал, так как в settings заменен на леговесную SQLite
 #        env:
 #          POSTGRES_DB: hw24_1_db
@@ -98,7 +98,7 @@ jobs:
 #          POSTGRES_PASSWORD: gI2onNlGdh1D
 #          POSTGRES_HOST: localhost
 #          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-#        run: poetry run python manage.py test
+        run: poetry run python manage.py test
 
   # настройка докер - образов приложения  в рамках git_hub actions
   build:
