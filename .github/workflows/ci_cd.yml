@@ -33,6 +33,18 @@ jobs:
     runs-on: ubuntu-latest
 #    needs: lint
 
+    services:
+      postgres:
+        image: postgres:16.0
+        env:
+          POSTGRES_DB: hw24_1_db
+          POSTGRES_USER: altair
+          POSTGRES_PASSWORD: gI2onNlGdh1D
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+
     steps:
       # клонирование репо с исходным кодом
       - name: Check out code
