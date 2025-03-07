@@ -278,6 +278,8 @@ REDOC_SETTINGS = {
 # это нужно, чтобы при запуске тестов использовалась легкая SQLite, а не PostgreSQL
 
 if 'test' in sys.argv:
+    CELERY_TASK_ALWAYS_EAGER = True  # Выполнять задачи синхронно
+    CELERY_TASK_EAGER_PROPAGATES = True  # Пропускать ошибки из задач
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

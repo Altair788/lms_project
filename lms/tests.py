@@ -162,9 +162,10 @@ class LessonAPITestCase(APITestCase):
         result = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            result.get("link_video"), ["Допускается ссылка только на youtube.com."]
-        )
+        # self.assertEqual(
+        #     result.get("link_video"), ["Допускается ссылка только на youtube.com."]
+        # )
+        self.assertEqual(response.data['link_video'], ['Допускается ссылка только на youtube.com.'])
 
     def test_lesson_delete(self):
         url = reverse("lms:lessons-delete", args=(self.lesson.pk,))
