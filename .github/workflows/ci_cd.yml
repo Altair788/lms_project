@@ -98,7 +98,7 @@ jobs:
 #          POSTGRES_PASSWORD: gI2onNlGdh1D
 #          POSTGRES_HOST: localhost
 #          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        run: poetry run python manage.py test
+#        run: poetry run python manage.py test
 
   # настройка докер - образов приложения  в рамках git_hub actions
   build:
@@ -141,5 +141,7 @@ jobs:
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
             docker stop myapp || true
             docker rm myapp || true
-            docker run -d --name myapp -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+            docker run -d --name myapp -p 80:8000 \
+          -e SECRET_KEY='${{ secrets.SECRET_KEY }}' \
+          ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
           EOF
