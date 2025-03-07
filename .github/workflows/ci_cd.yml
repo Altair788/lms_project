@@ -3,31 +3,39 @@ name: Django CI/CD Pipeline
 on: [ push, pull_request ]
 
 jobs:
-#  # блокирующие проверки (линтеры и тесты).
-#  lint:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Check out code
-#        uses: actions/checkout@v3
-#
-#      - name: Set up Python
-#        uses: actions/setup-python@v4
-#        with:
-#          python-version: '3.12.9'
-#
-#      # установка зависимостей проекта
-#      - name: Install Poetry
-#        uses: snok/install-poetry@v1
-#        with:
-#          version: 1.5.1
-#          virtualenvs-create: true
-#          virtualenvs-in-project: true
-#
-#      - name: Install dependencies
-#        run: poetry install
-#
-#      - name: Run Flake8
-#        run: flake8 .
+  # блокирующие проверки (линтеры и тесты).
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.9'
+
+      # установка зависимостей проекта
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run Flake8
+        run: |
+          echo "[flake8]
+          exclude = 
+              .venv,
+              .git,
+              __pycache__,
+              .venv/lib/python3.12/site-packages/phonenumbers/geodata/" > .flake8
+          flake8 .
+  
 
   test:
     runs-on: ubuntu-latest
