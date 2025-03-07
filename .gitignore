@@ -169,3 +169,4 @@ cython_debug/
 #.idea/
 
 .notes
+ci_example.yml
