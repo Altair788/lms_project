@@ -36,3 +36,15 @@ flake8 = "^7.1.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.coverage.run]
+omit = [
+    "*/migrations/*",  # Исключаем все файлы миграций
+    "*/__init__.py",   # Исключаем все служебные init.py
+    "manage.py",       # Исключаем manage.py
+    "config/asgi.py",  # Исключаем служебные файлы проекта
+    "config/settings.py",
+    "config/wsgi.py",
+    "users/tests.py",
+]
